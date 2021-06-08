@@ -7,8 +7,10 @@ const salt = 10;
 
 router.post("/signin", (req, res, next) => {
   const { email, password } = req.body;
+  
   User.findOne({ email })
     .then((userDocument) => {
+      console.log(userDocument)
       // If userDocument is null, it means that no user with the given email was found in the DB.
       // if you want your users to sign in with their username you can apply the same logic,
       // just be careful to set the username as unique when defining the schema.
@@ -25,6 +27,7 @@ router.post("/signin", (req, res, next) => {
         return res.status(400).json({ message: "Invalid credentials" });
       }
       req.session.currentUser = userDocument._id;
+      console.log("you are here");
       // userDocument is a mongodb document, we cannot mutate it but every document has a .toObject().
       const userObj = userDocument.toObject();
       // userObj is now an object, we can no delete the password before setting it in the session and sending the user to the frontend.
@@ -35,7 +38,7 @@ router.post("/signin", (req, res, next) => {
 });
 
 router.post("/signup", (req, res, next) => {
-  const { email, password, firstName, lastName } = req.body;
+  const { email, password, firstName, lastName, phoneNumber } = req.body;
 
   User.findOne({ email })
     .then((userDocument) => {
@@ -50,6 +53,7 @@ router.post("/signup", (req, res, next) => {
           email,
           lastName,
           firstName,
+          phoneNumber,
           password: hashedPassword,
         };
 
@@ -73,6 +77,7 @@ router.post("/signup", (req, res, next) => {
     })
     .catch(next);
 });
+
 
 router.get("/isLoggedIn", (req, res, next) => {
   // If currentUser is defined in the session it means the user is logged in.

@@ -22,6 +22,7 @@ import { AuthContext } from "./AuthProvider";
 
 export const withUser = (ComponentToPassUserContextTo) => {
   return function (props) {
+
     return (
       <AuthContext.Consumer>
         {(context) => (

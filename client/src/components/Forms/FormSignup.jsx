@@ -75,6 +75,17 @@ class FormSignup extends Component {
               name="lastName"
             />
           </div>
+          <div className="form-group">
+            <label className="label" htmlFor="phoneNumber">
+              Phone Number
+            </label>
+            <input
+              className="input"
+              id="phoneNumber"
+              type="text"
+              name="phoneNumber"
+            />
+          </div>
 
           <div className="form-group">
             <label className="label" htmlFor="email">

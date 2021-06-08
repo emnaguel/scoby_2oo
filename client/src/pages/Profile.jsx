@@ -4,8 +4,51 @@ import { withUser } from "../components/Auth/withUser";
 import "../styles/Profile.css";
 import "../styles/CardItem.css";
 import Button from "../components/Base/Button";
+import axios from "axios";
+import FormPhoneNumber from "../components/Forms/FormPhoneNumber"
 class Profile extends Component {
+  state={
+    phoneNumber: '',
+    items: []
+  }
+
+  componentDidMount() {
+    axios.get('http://localhost:8000/api/users/me/items', {withCredentials: true})
+    .then((response) => {
+        this.setState({
+            items: response.data
+        })
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+}
+
+  handleChange = (event) => {
+    console.log(event)
+    this.setState({
+      phoneNumber: event.target.value
+    })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { authContext } = this.props;
+
+    axios.patch("http://localhost:8000/api/users/me",  this.state, {withCredentials: true})
+      .then((data) => {
+
+         authContext.setUser(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+
   render() {
+
+
     const { authContext } = this.props;
     const { user } = authContext;
 
@@ -35,32 +78,20 @@ class Profile extends Component {
             <h2>
               {user.firstName} {user.lastName}
             </h2>
+            <p> {user.phoneNumber}</p>
             <Link className="link" to="/profile/settings">
               Edit profile
             </Link>
           </div>
+          {!user.phoneNumber && 
+            <div className="user-contact">
+              <h4>Add a phone number</h4>
+              <FormPhoneNumber submit={this.handleSubmit} change={this.handleChange} />
 
-          <div className="user-contact">
-            <h4>Add a phone number</h4>
+            </div>
+          }
 
-            <form className="form">
-              <div className="form-group">
-                <label className="label" htmlFor="phoneNumber">
-                  Phone number
-                </label>
-                <input
-                  className="input"
-                  id="phoneNumber"
-                  type="text"
-                  name="phoneNumber"
-                  placeholder="Add phone number"
-                />
-              </div>
-              <Button className="form__button">Add phone number</Button>
-            </form>
-          </div>
-
-          {/* Break whatever is belo  */}
+          {!this.state.items && 
           <div className="CardItem">
             <div className="item-empty">
               <div className="round-image">
@@ -69,31 +100,38 @@ class Profile extends Component {
               <p>You don't have any items :(</p>
             </div>
           </div>
-
-          <div className="CardItem">
-            <h3>Your items</h3>
-            <div className="item">
-              <div className="round-image">
-                <img
-                  src="https://vignette.wikia.nocookie.net/simpsons/images/1/14/Ralph_Wiggum.png/revision/latest/top-crop/width/360/height/360?cb=20100704163100"
-                  alt="item"
-                />
-              </div>
-              <div className="description">
-                <h2>Name of item</h2>
-                <h4>Quantity: 1 </h4>
-                <p>Description of the item</p>
-                <div className="buttons">
-                  <span>
-                    <button className="btn-secondary">Delete</button>
-                  </span>
-                  <span>
-                    <button className="btn-primary">Edit</button>
-                  </span>
+        }
+       
+          {this.state.items &&   <h3>Your items</h3>}
+          {this.state.items && this.state.items.map((item) => {
+            return(
+            <div className="CardItem" key={item._id}>
+              <div className="item">
+                <div className="round-image">
+                  <img
+                    src="https://vignette.wikia.nocookie.net/simpsons/images/1/14/Ralph_Wiggum.png/revision/latest/top-crop/width/360/height/360?cb=20100704163100"
+                    alt="item"
+                  />
+                </div>
+                <div className="description">
+                  <h2>{item.name}</h2>
+                  <h4>Quantity: {item.quantity}</h4>
+                  <p>{item.description}</p>
+                  <div className="buttons">
+                    <span>
+                      <button className="btn-secondary">Delete</button>
+                    </span>
+                    <span>
+                      <button className="btn-primary">Edit</button>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            )
+          })
+        }
         </section>
       </div>
     );

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+console.log(process.env.REACT_APP_BACKEND_URL)
 const service = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
   withCredentials: true, // Cookie is sent to client when using this service. (used for session)
@@ -33,7 +33,10 @@ const apiHandler = {
   isLoggedIn() {
     return service
       .get("/api/auth/isLoggedIn")
-      .then((res) => res.data)
+      .then((res) => {
+        console.log("you are logged in")
+        return res.data
+      })
       .catch(errorHandler);
   },
 

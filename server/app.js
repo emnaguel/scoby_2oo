@@ -30,7 +30,7 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     secret: process.env.SESSION_SECRET,
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours cookie
+      maxAge: 48 * 60 * 60 * 1000, // 24 hours cookie
     },
     resave: true,
     saveUninitialized: true,
@@ -43,6 +43,7 @@ app.use(
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/items", require("./routes/items"));
 
 /**
  * Error Handling middlewares
